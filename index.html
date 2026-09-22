@@ -1,0 +1,765 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Дженерал Констракшн</title>
+<style>
+  :root{
+    --ink:#1A1D21;
+    --ink-soft:#2A2E34;
+    --paper:#F2EEE7;
+    --paper-2:#E7E0D2;
+    --paper-3:#DDD4C0;
+    --steel:#545B66;
+    --steel-soft:#8A8F98;
+    --line:#C9BFA9;
+    --line-dark:#3A3F46;
+    --accent:#D9541C;
+    --accent-ink:#FFF9F1;
+    --on-dark:#F2EEE7;
+    --on-dark-soft:#B7BCC4;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1A1D21;
+      --paper-2:#22262B;
+      --paper-3:#2C3138;
+      --ink:#F2EEE7;
+      --ink-soft:#D9D4C7;
+      --steel:#B7BCC4;
+      --steel-soft:#868C96;
+      --line:#3A3F46;
+      --line-dark:#3A3F46;
+      --accent:#F0703A;
+      --accent-ink:#1A1205;
+      --on-dark:#F2EEE7;
+      --on-dark-soft:#B7BCC4;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1A1D21;
+    --paper-2:#22262B;
+    --paper-3:#2C3138;
+    --ink:#F2EEE7;
+    --ink-soft:#D9D4C7;
+    --steel:#B7BCC4;
+    --steel-soft:#868C96;
+    --line:#3A3F46;
+    --line-dark:#3A3F46;
+    --accent:#F0703A;
+    --accent-ink:#1A1205;
+    --on-dark:#F2EEE7;
+    --on-dark-soft:#B7BCC4;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{
+    font-family:'Unbounded',system-ui,sans-serif;
+    font-weight:700;
+    line-height:1.12;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  a{color:inherit;}
+  img{max-width:100%;}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:20px;}
+  @media (min-width:640px){ .wrap{padding-inline:32px;} }
+
+  .eyebrow{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:18px;height:2px;
+    background:var(--accent);
+    display:inline-block;
+  }
+
+  .btn{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:.95rem;
+    padding:14px 26px;
+    border-radius:3px;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    transition:transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+  .btn-accent{background:var(--accent);color:var(--accent-ink);}
+  .btn-accent:hover{background:#C2481A;}
+  :root[data-theme="dark"] .btn-accent:hover{background:#FF864F;}
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .btn-accent:hover{background:#FF864F;} }
+  .btn-ghost-dark{border-color:rgba(242,238,231,.4);color:var(--on-dark);}
+  .btn-ghost-dark:hover{border-color:var(--on-dark);background:rgba(242,238,231,.08);}
+  .btn-ghost-light{border-color:var(--line);color:var(--ink);}
+  .btn-ghost-light:hover{border-color:var(--ink);background:var(--paper-2);}
+
+  /* ---------- header ---------- */
+  header.site{
+    position:sticky;
+    top:env(safe-area-inset-top,0px);
+    z-index:40;
+    background:color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-block:16px;gap:16px;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Unbounded',sans-serif;font-weight:700;
+    font-size:1rem;letter-spacing:-.01em;white-space:nowrap;
+  }
+  .logo-mark{
+    width:34px;height:34px;border-radius:3px;
+    background:var(--ink);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;font-weight:800;flex:none;
+  }
+  nav.links{display:none;gap:26px;font-size:.92rem;font-weight:600;color:var(--steel);}
+  nav.links a{text-decoration:none;padding-block:4px;border-bottom:2px solid transparent;}
+  nav.links a:hover{color:var(--ink);border-color:var(--accent);}
+  @media (min-width:920px){ nav.links{display:flex;} }
+  .head-actions{display:flex;align-items:center;gap:14px;}
+  .head-phone{display:none;font-weight:700;font-size:.92rem;white-space:nowrap;}
+  @media (min-width:1080px){ .head-phone{display:inline;} }
+  .head-actions .btn{padding:10px 18px;font-size:.85rem;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    background:var(--ink);
+    color:var(--on-dark);
+    overflow:hidden;
+    border-bottom:1px solid var(--line-dark);
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(242,238,231,.06) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(0deg, rgba(242,238,231,.06) 0 1px, transparent 1px 64px);
+    mask-image:linear-gradient(to bottom, black, transparent 85%);
+  }
+  .hero-inner{position:relative;padding-block:64px 76px;}
+  @media (min-width:760px){ .hero-inner{padding-block:92px 96px;} }
+  .hero-top{display:flex;flex-direction:column;gap:22px;max-width:760px;}
+  .hero h1{font-size:clamp(2.1rem,5.2vw,3.6rem);color:var(--on-dark);}
+  .hero h1 em{font-style:normal;color:var(--accent);}
+  .hero-sub{font-size:clamp(1rem,1.6vw,1.15rem);color:var(--on-dark-soft);max-width:52ch;}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;}
+  .hero-stats{
+    margin-top:56px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+    background:rgba(242,238,231,.14);
+    border:1px solid rgba(242,238,231,.14);
+    border-radius:4px;overflow:hidden;
+  }
+  @media (min-width:700px){ .hero-stats{grid-template-columns:repeat(4,1fr);} }
+  .hero-stat{background:var(--ink);padding:20px 18px;}
+  .hero-stat .num{font-family:'Unbounded',sans-serif;font-weight:700;font-size:1.9rem;color:var(--on-dark);font-variant-numeric:tabular-nums;}
+  .hero-stat .num span{color:var(--accent);}
+  .hero-stat .lbl{margin-top:4px;font-size:.8rem;color:var(--on-dark-soft);}
+
+  /* ---------- section shell ---------- */
+  section{padding-block:64px;}
+  @media (min-width:760px){ section{padding-block:88px;} }
+  .section-head{
+    display:flex;flex-direction:column;gap:14px;
+    max-width:660px;margin-bottom:44px;
+  }
+  .section-head h2{font-size:clamp(1.6rem,3vw,2.3rem);}
+  .section-head p{color:var(--steel);font-size:1.02rem;}
+  .on-dark{background:var(--ink);color:var(--on-dark);}
+  .on-dark .section-head p{color:var(--on-dark-soft);}
+  .on-dark h2{color:var(--on-dark);}
+
+  /* ---------- about ---------- */
+  .about-grid{display:grid;gap:40px;}
+  @media (min-width:860px){ .about-grid{grid-template-columns:1fr 1fr;align-items:start;} }
+  .about-copy p{color:var(--steel);font-size:1.03rem;max-width:56ch;}
+  .about-copy p + p{margin-top:14px;}
+  .license-card{
+    margin-top:26px;padding:18px 20px;border:1px solid var(--line);
+    border-radius:4px;background:var(--paper-2);
+    display:flex;gap:14px;align-items:flex-start;
+  }
+  .license-card svg{flex:none;color:var(--accent);}
+  .license-card .t{font-weight:700;font-size:.92rem;}
+  .license-card .d{color:var(--steel);font-size:.86rem;margin-top:2px;}
+  .about-facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .about-fact{background:var(--paper);padding:22px 20px;}
+  .about-fact .num{font-family:'Unbounded',sans-serif;font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .about-fact .lbl{color:var(--steel);font-size:.84rem;margin-top:4px;}
+
+  /* ---------- services ---------- */
+  .svc-grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  @media (min-width:640px){ .svc-grid{grid-template-columns:1fr 1fr;} }
+  @media (min-width:980px){ .svc-grid{grid-template-columns:1fr 1fr 1fr;} }
+  .svc-card{background:var(--paper);padding:28px 26px;display:flex;flex-direction:column;gap:14px;}
+  .svc-icon{
+    width:44px;height:44px;border-radius:3px;
+    background:var(--paper-2);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .svc-card h3{font-size:1.05rem;font-weight:700;font-family:'Manrope',sans-serif;}
+  .svc-card p{color:var(--steel);font-size:.92rem;}
+
+  /* ---------- process ---------- */
+  .process-list{display:flex;flex-direction:column;}
+  .p-step{
+    display:grid;grid-template-columns:64px 1fr;gap:20px;
+    padding-block:26px;border-top:1px solid var(--line-dark);
+    position:relative;
+  }
+  .p-step:last-child{border-bottom:1px solid var(--line-dark);}
+  .p-num{font-family:'Unbounded',sans-serif;font-weight:700;font-size:1.3rem;color:var(--accent);font-variant-numeric:tabular-nums;}
+  .p-body h3{font-size:1.08rem;color:var(--on-dark);font-family:'Manrope',sans-serif;font-weight:700;}
+  .p-body p{color:var(--on-dark-soft);font-size:.92rem;margin-top:6px;max-width:56ch;}
+  @media (min-width:760px){
+    .p-step{grid-template-columns:110px 1fr;}
+  }
+
+  /* ---------- projects ---------- */
+  .proj-grid{display:grid;gap:22px;}
+  @media (min-width:640px){ .proj-grid{grid-template-columns:1fr 1fr;} }
+  .proj-card{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--paper-2);}
+  .proj-visual{
+    aspect-ratio:16/10;position:relative;overflow:hidden;
+    background:linear-gradient(155deg,var(--paper-3),var(--paper-2));
+  }
+  .proj-visual svg{position:absolute;inset:0;width:100%;height:100%;}
+  .proj-body{padding:18px 20px 22px;}
+  .proj-tag{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
+  .proj-body h3{margin-top:8px;font-size:1.08rem;font-family:'Manrope',sans-serif;font-weight:700;}
+  .proj-body p{margin-top:6px;color:var(--steel);font-size:.88rem;}
+  .proj-note{margin-top:34px;font-size:.86rem;color:var(--steel);border-top:1px solid var(--line);padding-top:18px;}
+
+  /* ---------- advantages ---------- */
+  .adv-grid{display:grid;gap:1px;background:rgba(242,238,231,.14);border:1px solid rgba(242,238,231,.14);border-radius:4px;overflow:hidden;}
+  @media (min-width:640px){ .adv-grid{grid-template-columns:1fr 1fr;} }
+  @media (min-width:980px){ .adv-grid{grid-template-columns:1fr 1fr 1fr;} }
+  .adv-card{background:var(--ink);padding:26px 24px;}
+  .adv-card h3{color:var(--on-dark);font-size:1rem;font-family:'Manrope',sans-serif;font-weight:700;display:flex;gap:10px;align-items:flex-start;}
+  .adv-card h3 svg{flex:none;color:var(--accent);margin-top:2px;}
+  .adv-card p{color:var(--on-dark-soft);font-size:.88rem;margin-top:10px;}
+
+  /* ---------- contact ---------- */
+  .contact-grid{display:grid;gap:40px;}
+  @media (min-width:900px){ .contact-grid{grid-template-columns:1fr 1.05fr;align-items:start;} }
+  .contact-info{display:flex;flex-direction:column;gap:22px;}
+  .info-row{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-top:1px solid var(--line);}
+  .info-row:first-child{border-top:none;padding-top:0;}
+  .info-row svg{flex:none;color:var(--accent);margin-top:2px;}
+  .info-row .t{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--steel);font-weight:700;}
+  .info-row .v{margin-top:4px;font-size:1.02rem;font-weight:600;}
+  .copy-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .copy-btn{
+    font-family:'Manrope',sans-serif;font-size:.74rem;font-weight:700;
+    border:1px solid var(--line);background:transparent;color:var(--steel);
+    padding:4px 10px;border-radius:3px;cursor:pointer;
+  }
+  .copy-btn:hover{border-color:var(--ink);color:var(--ink);}
+  .copy-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .form-card{background:var(--paper-2);border:1px solid var(--line);border-radius:4px;padding:28px;}
+  .form-card h3{font-size:1.1rem;font-family:'Manrope',sans-serif;font-weight:700;}
+  .form-card > p{color:var(--steel);font-size:.88rem;margin-top:6px;}
+  form{margin-top:22px;display:flex;flex-direction:column;gap:16px;}
+  .field label{display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--steel);margin-bottom:6px;}
+  .field input,.field textarea{
+    width:100%;font-family:'Manrope',sans-serif;font-size:.96rem;
+    padding:12px 14px;border-radius:3px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);
+  }
+  .field input:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:88px;}
+  .form-foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:4px;}
+  .form-foot p{font-size:.78rem;color:var(--steel-soft);max-width:34ch;}
+  #okMsg{
+    display:flex;gap:10px;align-items:center;
+    background:var(--paper);border:1px solid var(--line);border-radius:4px;
+    padding:14px 16px;font-size:.9rem;font-weight:600;margin-top:6px;
+  }
+  #okMsg svg{color:#3F8F5C;flex:none;}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--ink);color:var(--on-dark-soft);border-top:1px solid var(--line-dark);}
+  .foot-top{padding-block:52px 36px;display:grid;gap:36px;}
+  @media (min-width:760px){ .foot-top{grid-template-columns:1.3fr 1fr 1fr;} }
+  .foot-brand .logo{color:var(--on-dark);}
+  .foot-brand .logo-mark{background:var(--accent);color:var(--accent-ink);}
+  .foot-brand p{margin-top:14px;font-size:.88rem;max-width:36ch;color:var(--on-dark-soft);}
+  .foot-col h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--on-dark);font-weight:700;}
+  .foot-col ul{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:.9rem;}
+  .foot-col a{text-decoration:none;color:var(--on-dark-soft);}
+  .foot-col a:hover{color:var(--accent);}
+  .foot-bottom{
+    border-top:1px solid var(--line-dark);padding-block:20px;
+    display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;
+    font-size:.78rem;color:var(--steel-soft);
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<header class="site" id="top">
+  <div class="wrap nav-row">
+    <a href="#top" class="logo" style="text-decoration:none;color:inherit;">
+      <span class="logo-mark">ДК</span>
+      <span>Дженерал&nbsp;Констракшн</span>
+    </a>
+    <nav class="links" aria-label="Основная навигация">
+      <a href="#about">О компании</a>
+      <a href="#services">Услуги</a>
+      <a href="#process">Как мы работаем</a>
+      <a href="#projects">Объекты</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <div class="head-actions">
+      <span class="head-phone">+7&nbsp;(812)&nbsp;000-00-00</span>
+      <a href="#contact" class="btn btn-accent">Обсудить проект</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <div class="hero-top">
+        <span class="eyebrow" style="color:var(--accent);">Строительная компания · Санкт-Петербург</span>
+        <h1>Строим <em>жилые и&nbsp;нежилые здания</em> под ключ — от проекта до сдачи объекта</h1>
+        <p class="hero-sub">«Дженерал Констракшн» ведёт полный цикл строительства в Санкт-Петербурге и Ленинградской области: проектирование, согласования, строительно-монтажные работы и сдачу объекта заказчику.</p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn btn-accent">Получить расчёт стоимости</a>
+          <a href="#projects" class="btn btn-ghost-dark">Смотреть объекты</a>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num"><span>15+</span></div><div class="lbl">лет на рынке строительства</div></div>
+        <div class="hero-stat"><div class="num"><span>120+</span></div><div class="lbl">реализованных объектов</div></div>
+        <div class="hero-stat"><div class="num"><span>5</span> лет</div><div class="lbl">гарантии на выполненные работы</div></div>
+        <div class="hero-stat"><div class="num">СРО</div><div class="lbl">допуск к строительным работам</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap about-grid">
+      <div class="about-copy">
+        <span class="eyebrow">О компании</span>
+        <h2 style="margin-top:14px;">Полный цикл строительства — от идеи до передачи ключей</h2>
+        <p style="margin-top:20px;">АО «Дженерал Констракшн» специализируется на строительстве жилых и нежилых зданий в Санкт-Петербурге: многоквартирных домов, коттеджей, складских, производственных и административных объектов.</p>
+        <p>Работаем как генеральный подрядчик — собственные инженерно-технические специалисты, проверенные субподрядные бригады и парк техники позволяют вести объект без потери качества на каждом этапе, от земляных работ до чистовой отделки.</p>
+        <div class="license-card">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div>
+            <div class="t">Допуск СРО к строительным работам</div>
+            <div class="d">Свидетельство № — укажите номер и дату выдачи вашего допуска СРО перед публикацией сайта.</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-facts">
+        <div class="about-fact"><div class="num">150 000&nbsp;м²</div><div class="lbl">построенных площадей</div></div>
+        <div class="about-fact"><div class="num">40+</div><div class="lbl">специалистов в штате</div></div>
+        <div class="about-fact"><div class="num">0</div><div class="lbl">просроченных сдач объекта</div></div>
+        <div class="about-fact"><div class="num">4</div><div class="lbl">направления строительства</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" style="background:var(--paper-2);">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Услуги</span>
+        <h2>Что мы строим и проектируем</h2>
+        <p>Берём объект в работу на любом этапе — от разработки проектной документации до генерального подряда «под ключ».</p>
+      </div>
+      <div class="svc-grid">
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/><path d="M9 12h.01M15 12h.01M9 9h.01M15 9h.01"/></svg></div>
+          <h3>Жилищное строительство</h3>
+          <p>Многоквартирные дома, коттеджи и таунхаусы — от котлована до благоустройства придомовой территории.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="1"/><path d="M9 21v-6h6v6M3 7l9-4 9 4"/></svg></div>
+          <h3>Нежилые здания</h3>
+          <p>Складские, производственные и административные объекты с учётом технологических требований заказчика.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h9l5 5v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5Z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 17h5"/></svg></div>
+          <h3>Проектирование и согласование</h3>
+          <p>Разработка проектной документации, прохождение экспертизы и получение разрешительных документов.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94Z"/></svg></div>
+          <h3>Реконструкция и капремонт</h3>
+          <p>Усиление конструкций, перепланировка, замена инженерных систем в существующих зданиях.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6-6 6 6"/><path d="M6 9v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9"/><path d="M12 3v13"/></svg></div>
+          <h3>Генеральный подряд</h3>
+          <p>Управление проектом «под ключ»: подрядчики, поставки, сроки, контроль качества и бюджета.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4M15 3v4M4 8h16M6 8v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M9 14h6"/></svg></div>
+          <h3>Инженерные сети</h3>
+          <p>Электро-, тепло- и водоснабжение, вентиляция и слаботочные системы объекта.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process" class="on-dark">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Как мы работаем</span>
+        <h2>Пять этапов от заявки до сдачи объекта</h2>
+        <p>Прозрачный процесс на каждом шаге: заказчик видит статус объекта и согласовывает ключевые решения.</p>
+      </div>
+      <div class="process-list">
+        <div class="p-step">
+          <div class="p-num">01</div>
+          <div class="p-body"><h3>Консультация и техническое задание</h3><p>Обсуждаем задачи объекта, бюджет и сроки, формируем техническое задание.</p></div>
+        </div>
+        <div class="p-step">
+          <div class="p-num">02</div>
+          <div class="p-body"><h3>Проектирование и согласование</h3><p>Разрабатываем проектную документацию и получаем необходимые разрешения.</p></div>
+        </div>
+        <div class="p-step">
+          <div class="p-num">03</div>
+          <div class="p-body"><h3>Подготовительные работы</h3><p>Организуем стройплощадку, инженерные изыскания и поставку материалов.</p></div>
+        </div>
+        <div class="p-step">
+          <div class="p-num">04</div>
+          <div class="p-body"><h3>Строительно-монтажные работы</h3><p>Ведём строительство с еженедельным контролем качества и графика работ.</p></div>
+        </div>
+        <div class="p-step">
+          <div class="p-num">05</div>
+          <div class="p-body"><h3>Сдача объекта и гарантия</h3><p>Передаём объект заказчику с полным пакетом документов и гарантийным обслуживанием.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Объекты</span>
+        <h2>Направления строительства</h2>
+        <p>Примеры типов объектов, которые реализует команда. Замените на фотографии и описания ваших реализованных проектов.</p>
+      </div>
+      <div class="proj-grid">
+        <article class="proj-card">
+          <div class="proj-visual">
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="250" fill="var(--paper-3)"/>
+              <g stroke="var(--steel-soft)" stroke-width="1" opacity=".35">
+                <line x1="0" y1="210" x2="400" y2="210"/>
+              </g>
+              <g fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round">
+                <rect x="70" y="90" width="90" height="120"/>
+                <rect x="170" y="60" width="90" height="150"/>
+                <rect x="270" y="110" width="70" height="100"/>
+              </g>
+              <g stroke="var(--accent)" stroke-width="2" opacity=".6">
+                <line x1="90" y1="105" x2="90" y2="210"/><line x1="110" y1="105" x2="110" y2="210"/><line x1="130" y1="105" x2="130" y2="210"/>
+                <line x1="190" y1="75" x2="190" y2="210"/><line x1="210" y1="75" x2="210" y2="210"/><line x1="230" y1="75" x2="230" y2="210"/><line x1="250" y1="75" x2="250" y2="210"/>
+              </g>
+            </svg>
+          </div>
+          <div class="proj-body">
+            <span class="proj-tag">Жилой комплекс</span>
+            <h3>Многоквартирное жилое строительство</h3>
+            <p>Монолитно-каркасные дома средней и повышенной этажности с закрытой территорией.</p>
+          </div>
+        </article>
+        <article class="proj-card">
+          <div class="proj-visual">
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="250" fill="var(--paper-3)"/>
+              <line x1="0" y1="210" x2="400" y2="210" stroke="var(--steel-soft)" stroke-width="1" opacity=".35"/>
+              <g fill="none" stroke="var(--accent)" stroke-width="3">
+                <rect x="50" y="120" width="300" height="90"/>
+                <path d="M50 120 L200 70 L350 120"/>
+              </g>
+              <g stroke="var(--accent)" stroke-width="2" opacity=".6">
+                <line x1="110" y1="120" x2="110" y2="210"/><line x1="170" y1="120" x2="170" y2="210"/>
+                <line x1="230" y1="120" x2="230" y2="210"/><line x1="290" y1="120" x2="290" y2="210"/>
+              </g>
+            </svg>
+          </div>
+          <div class="proj-body">
+            <span class="proj-tag">Складской комплекс</span>
+            <h3>Производственно-складские здания</h3>
+            <p>Быстровозводимые конструкции с высокими пролётами и нагрузкой на полы под технику.</p>
+          </div>
+        </article>
+        <article class="proj-card">
+          <div class="proj-visual">
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="250" fill="var(--paper-3)"/>
+              <line x1="0" y1="210" x2="400" y2="210" stroke="var(--steel-soft)" stroke-width="1" opacity=".35"/>
+              <g fill="none" stroke="var(--accent)" stroke-width="3">
+                <rect x="110" y="50" width="180" height="160"/>
+              </g>
+              <g stroke="var(--accent)" stroke-width="2" opacity=".6">
+                <line x1="110" y1="80" x2="290" y2="80"/><line x1="110" y1="110" x2="290" y2="110"/>
+                <line x1="110" y1="140" x2="290" y2="140"/><line x1="110" y1="170" x2="290" y2="170"/>
+              </g>
+            </svg>
+          </div>
+          <div class="proj-body">
+            <span class="proj-tag">Административное здание</span>
+            <h3>Офисные и общественные объекты</h3>
+            <p>Здания для бизнес-центров, клиник и учреждений с полным инженерным оснащением.</p>
+          </div>
+        </article>
+        <article class="proj-card">
+          <div class="proj-visual">
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice">
+              <rect width="400" height="250" fill="var(--paper-3)"/>
+              <line x1="0" y1="210" x2="400" y2="210" stroke="var(--steel-soft)" stroke-width="1" opacity=".35"/>
+              <g fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round">
+                <path d="M70 210 V150 L110 110 L150 150 V210 Z"/>
+                <path d="M180 210 V160 L215 128 L250 160 V210 Z"/>
+                <path d="M280 210 V150 L320 110 L360 150 V210 Z"/>
+              </g>
+            </svg>
+          </div>
+          <div class="proj-body">
+            <span class="proj-tag">Коттеджный посёлок</span>
+            <h3>Малоэтажное жилое строительство</h3>
+            <p>Индивидуальные и блокированные жилые дома в пригороде Санкт-Петербурга.</p>
+          </div>
+        </article>
+      </div>
+      <p class="proj-note">Схемы выше — иллюстрация направлений работы, а не фотографии конкретных объектов. Добавьте фотографии, адреса и годы сдачи ваших реализованных проектов.</p>
+    </div>
+  </section>
+
+  <section id="advantages" class="on-dark">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Почему выбирают нас</span>
+        <h2>Строим ответственно и в срок</h2>
+      </div>
+      <div class="adv-grid">
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Соблюдение сроков</h3>
+          <p>Календарный график строительства и еженедельная отчётность перед заказчиком.</p>
+        </div>
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4Z"/></svg>Гарантия и СРО</h3>
+          <p>Работаем по договору, гарантия на выполненные работы и допуск СРО.</p>
+        </div>
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 12 5 5L22 4"/></svg>Фиксированная смета</h3>
+          <p>Прозрачная смета без скрытых доплат на всех этапах строительства объекта.</p>
+        </div>
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="1"/><path d="M9 21v-6h6v6M3 7l9-4 9 4"/></svg>Собственная техника</h3>
+          <p>Парк спецтехники и штатные бригады — не зависим от загрузки субподрядчиков.</p>
+        </div>
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h9l5 5v11.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5Z"/><path d="M14 3v5h5"/></svg>Полный пакет документов</h3>
+          <p>Ведём проектную и исполнительную документацию, сопровождаем экспертизы.</p>
+        </div>
+        <div class="adv-card">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Личный менеджер</h3>
+          <p>Один ответственный на связи с заказчиком на всех этапах строительства.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="background:var(--paper-2);">
+    <div class="wrap contact-grid">
+      <div>
+        <span class="eyebrow">Контакты</span>
+        <h2 style="margin-top:14px;">Обсудим ваш объект</h2>
+        <p style="margin-top:14px;color:var(--steel);max-width:48ch;">Оставьте заявку или свяжитесь напрямую — ответим в рабочее время и предложим удобное время для встречи на объекте.</p>
+
+        <div class="contact-info" style="margin-top:30px;">
+          <div class="info-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            <div>
+              <div class="t">Телефон</div>
+              <div class="v copy-row">
+                <span id="phoneVal">+7 (812) 000-00-00</span>
+                <button class="copy-btn" type="button" data-copy="+78120000000" data-target="phoneCopyMsg">Копировать</button>
+                <span id="phoneCopyMsg" style="font-size:.76rem;color:var(--steel);" hidden>Скопировано</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+            <div>
+              <div class="t">Email</div>
+              <div class="v">&nbsp;</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <div class="t">Юридический адрес</div>
+              <div class="v">195030, г. Санкт-Петербург, ул. Химиков, д. 28, литера Я, офис 207</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            <div>
+              <div class="t">Режим работы</div>
+              <div class="v">Пн–Пт, 9:00–18:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h3>Заявка на расчёт стоимости</h3>
+        <p>Заполните форму — свяжемся с вами в течение одного рабочего дня.</p>
+        <form id="leadForm">
+          <div class="field">
+            <label for="f-name">Имя</label>
+            <input id="f-name" name="name" type="text" required autocomplete="name" placeholder="Как к вам обращаться">
+          </div>
+          <div class="field">
+            <label for="f-phone">Телефон</label>
+            <input id="f-phone" name="phone" type="tel" required autocomplete="tel" placeholder="+7 (___) ___-__-__">
+          </div>
+          <div class="field">
+            <label for="f-message">О проекте</label>
+            <textarea id="f-message" name="message" placeholder="Тип объекта, площадь, район строительства"></textarea>
+          </div>
+          <div class="form-foot">
+            <button type="submit" class="btn btn-accent">Отправить заявку</button>
+            <p>Отправляя форму, вы соглашаетесь на обработку персональных данных.</p>
+          </div>
+          <div id="okMsg" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 12 5 5L22 4"/></svg>
+            <span>Заявка получена. Мы свяжемся с вами в ближайшее рабочее время.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-top">
+    <div class="foot-brand">
+      <a href="#top" class="logo" style="text-decoration:none;">
+        <span class="logo-mark">ДК</span>
+        <span>Дженерал&nbsp;Констракшн</span>
+      </a>
+      <p>Строительство жилых и нежилых зданий «под ключ» в Санкт-Петербурге и Ленинградской области.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Навигация</h4>
+      <ul>
+        <li><a href="#about">О компании</a></li>
+        <li><a href="#services">Услуги</a></li>
+        <li><a href="#process">Как мы работаем</a></li>
+        <li><a href="#projects">Объекты</a></li>
+        <li><a href="#contact">Контакты</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Контакты</h4>
+      <ul>
+        <li>+7 (812) 000-00-00</li>
+        <li>&nbsp;</li>
+        <li>195030, г. Санкт-Петербург,<br>ул. Химиков, д. 28, литера Я, офис 207</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© <span id="year"></span> АО «Дженерал Констракшн». Все права защищены.</span>
+    <span>ИНН 7814529967 · КПП 780601001 · ОГРН 1127847127297</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  try{ document.getElementById('year').textContent = new Date().getFullYear(); }catch(e){}
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      var msg = document.getElementById(btn.getAttribute('data-target'));
+      function show(){
+        if(msg){ msg.hidden = false; setTimeout(function(){ msg.hidden = true; }, 1800); }
+      }
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(show).catch(function(){
+            fallbackCopy(text); show();
+          });
+        } else {
+          fallbackCopy(text); show();
+        }
+      }catch(e){
+        fallbackCopy(text); show();
+      }
+    });
+  });
+
+  function fallbackCopy(text){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }catch(e){}
+  }
+
+  var form = document.getElementById('leadForm');
+  var ok = document.getElementById('okMsg');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(ok){
+        ok.hidden = false;
+        ok.scrollIntoView({block:'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+      }
+      form.reset();
+    });
+  }
+})();
+</script>
+
+</body></html>
